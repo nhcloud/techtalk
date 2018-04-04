@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageSample", "StorageSample\StorageSample.csproj", "{72638894-620E-4563-BD25-699800BDFBE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphSample", "GraphSample\GraphSample.csproj", "{F536527F-C84C-4FAB-B81A-F20A3AC2ABE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72638894-620E-4563-BD25-699800BDFBE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72638894-620E-4563-BD25-699800BDFBE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72638894-620E-4563-BD25-699800BDFBE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72638894-620E-4563-BD25-699800BDFBE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F536527F-C84C-4FAB-B81A-F20A3AC2ABE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F536527F-C84C-4FAB-B81A-F20A3AC2ABE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F536527F-C84C-4FAB-B81A-F20A3AC2ABE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F536527F-C84C-4FAB-B81A-F20A3AC2ABE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2819F08-892E-440B-A50D-F4611CEDE024}
+	EndGlobalSection
+EndGlobal

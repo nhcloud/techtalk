@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Graph Query</h2>
+                @if ((bool)ViewBag.SignIn == false)
+                {
+                    <input type="button" value="SignIn" id="signIn" />
+                }
+                <input type="text" value="" id="pathAndQuery" />
+                <input type="button" value="Execute" id="execQuery" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Query Response</h2>
+                <span id="queryResponse"></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#signIn").click(function () {
+            location.href = "/oauth2/signin";
+            return;
+        });
+        $("#execQuery").click(function () {
+            $("#queryResponse").text("");
+            $.ajax({
+                url: "/api/graph?pathAndQuery=" + $("#pathAndQuery").val(),
+                type: 'Get',
+                contentType: 'application/json',
+                success: function (data) {
+                    $("#queryResponse").text(data);
+                },
+                error: function (err) {
+                    $("#queryResponse").text("Error occured!" + err);
+                }
+            });
+        });
+
+    });
+</script>
