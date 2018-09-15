@@ -3,7 +3,7 @@ Function Copy-AzMarketPlaceVhd([string]$storageAccount,[string]$storageKey,[stri
     $sourceContext = New-AzureStorageContext  -StorageAccountName $storageAccount -StorageAccountKey $storageKey  
     $destContext = New-AzureStorageContext  -StorageAccountName $destStorageAccount -StorageAccountKey $destStorageKey  
     ### Target Container Name
-    $destContainerName = "publishedvhds"
+    #$destContainerName = "publishedvhds"
 
     ### Start the Asynchronous Copy ###
     $blob1 = Start-AzureStorageBlobCopy -srcUri $srcUri -DestContainer $destContainerName -DestBlob $destFileName -SrcContext $sourceContext -DestContext $destContext
