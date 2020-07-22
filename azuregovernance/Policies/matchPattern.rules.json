@@ -1,0 +1,21 @@
+{
+    "if": {
+        "allOf": [
+            {
+                "field": "type",
+                "in": [
+                    "Microsoft.Compute/virtualMachines"
+                ]
+            },
+            {
+                "not": {
+                    "field": "name",
+                    "match": "[parameters('namePattern')]"
+                }
+            }
+        ]
+    },
+    "then": {
+        "effect": "deny"
+    }
+}

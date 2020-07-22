@@ -1,0 +1,37 @@
+{
+    "properties": {
+        "displayName": "Virtual Machine Name pattern with match condition.",
+        "description": "Enforce a naming pattern on resources with the match condition.",
+        "mode": "Indexed",
+        "parameters": {
+            "namePattern": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "namePattern",
+                    "description": "Pattern to use for names. Can include ? for letters and # for numbers."
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "in": [
+                            "Microsoft.Compute/virtualMachines"
+                        ]
+                    },
+                    {
+                        "not": {
+                            "field": "name",
+                            "match": "[parameters('namePattern')]"
+                        }
+                    }
+                ]
+            },
+            "then": {
+                "effect": "deny"
+            }
+        }
+    }
+}
