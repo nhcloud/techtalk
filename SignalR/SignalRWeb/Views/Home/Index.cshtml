@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="app" class="container">
+    <h1 class="title">Blogs</h1>
+    <div id="stocks">
+        <div v-for="item in items" class="content">
+            <transition name="fade" mode="out-in">
+                <div class="list-item" :key="item.id">
+                    <div class="title"><a href="{{ item.url }}">{{ item.title }}</a></div>
+                    <div class="summary">
+                        <span>
+                            {{ item.summary }}
+                        </span>
+                    </div>
+                </div>
+            </transition>
+        </div>
+    </div>
+</div>

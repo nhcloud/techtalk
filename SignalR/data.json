@@ -1,0 +1,14 @@
+[
+    {
+        "id": "4c9f8fa7-5496-41be-b181-b9e5ca20f9f3",
+        "title": "BOSTON: Azure Governance (Online)",
+        "summary": "Today, I had the opportunity to speak online at Boston Azure and North Boston Azure Cloud User Group, Boston, MA. Topic includes Azure Governances using Management Group, RBAC, Policies, and Blueprints. The session was very interactive, engaging with loads of questions.",
+        "url": "https://udai.io/boston-azure-governance-online/"
+    },
+    {
+        "id": "23371824-43dd-43a6-9f4d-9982b44c468f",
+        "title": "Nashua: Azure CosmosDB",
+        "summary": "Today, As an organizer of the Nashua Cloud.NET user group presented about Azure CosmosDB (SQL API).",
+        "url": "https://udai.io/nashua-azure-cosmosdb/"
+    }
+]
