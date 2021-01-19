@@ -21,6 +21,12 @@
                 "description": "Pricing tier of the Web App."
             }
         },
+        "packageUri": {
+           "type": "string",
+            "metadata": {
+                "description": "Deployable .zip package."
+            }
+        },
         "storageAccountName": {
             "type": "string",
             "metadata": {
@@ -119,6 +125,7 @@
                     "location": { "value": "[parameters('location')]" },
                     "webName": { "value": "[parameters('webName')]" },
                     "webSku": { "value": "[parameters('webSku')]" },
+                    "packageUri": { "value": "[parameters('packageUri')]" },
                     "webAppInstrumentationKey": { "value": "[reference('appinsight').outputs.webAppInstrumentationKey.value]" },
                     "webAppInsightConnectionString": { "value": "[reference('appinsight').outputs.webAppInsightConnectionString.value]" }
                 }
@@ -173,10 +180,6 @@
         "keyVaultSecretUri": {
             "type": "string",
             "value": "[reference('keyvault').outputs.keyVaultSecretUri.value]"
-        },
-        "searchAdminKey": {
-            "type": "string",
-            "value": "[reference('search').outputs.searchAdminKey.value]"
         }
     }
 }

@@ -66,6 +66,13 @@
                 "visible": true
             },
             {
+                "name": "packageUri",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Package Uri",
+                "toolTip": "Deployable Zip package.",
+                "defaultValue": ""
+            },
+            {
                 "name": "storageAccount",
                 "type": "Microsoft.Common.TextBox",
                 "label": "Storage Account Name",
@@ -145,6 +152,7 @@
             "location": "[location()]",
             "webName": "[basics('webName')]",
             "webSku": "[basics('webSku')]",
+            "packageUri": "[basics('packageUri')]",
             "storageAccountName": "[basics('storageAccount')]",
             "storageAccountSku": "[basics('storageAccountSku')]",
             "keyVaultName": "[basics('keyVaultName')]",
