@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webName": {
+            "value": "",
+            "metadata": {
+                "description": "Name of the Web App."
+            }
+        },
+        "webSku": {
+            "value": "",
+            "metadata": {
+                "description": "Pricing tier of the Web App."
+            }
+        },
+        "packageUri": {
+            "value": "",
+            "metadata": {
+                "description": "Web App Package Uri."
+            }
+        },
+        "storageAccountName": {
+            "value": "",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            }
+        },
+        "storageAccountSku": {
+            "value": "Standard_GRS",
+            "metadata": {
+                "description": "Pricing tier of the Storage Account."
+            }
+        },
+        "keyVaultName": {
+            "value": "",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            }
+        },
+        "keyVaultSku": {
+            "value": "Standard",
+            "metadata": {
+                "description": "Pricing tier of the Key Vault"
+            }
+        }
+    }
+}

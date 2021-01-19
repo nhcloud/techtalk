@@ -1,0 +1,154 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [
+            {
+                "name": "webName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Web App name",
+                "toolTip": "The name of the Web App.",
+                "defaultValue": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "^[a-z0-9-]{2,35}$",
+                    "validationMessage": "The Web App Name must be between 2 and 35 lower case characters long and contain letters, numbers and hyphens only."
+                }
+            },
+            {
+                "name": "webSku",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Web App Sku and Size",
+                "toolTip": "The pricing tier of the Web App.",
+                "defaultValue": "P2V2(2 Core, 7.00 GB, 250 GB)",
+                "constraints": {
+                    "allowedValues": [
+                        {
+                            "label": "B1(1 Core, 1.75 GB, 10 GB)",
+                            "value": "B1"
+                        },
+                        {
+                            "label": "B2(2 Core, 3.50 GB, 10 GB)",
+                            "value": "B2"
+                        },
+                        {
+                            "label": "B3(4 Core, 7.00 GB, 10 GB)",
+                            "value": "B3"
+                        },
+                        {
+                            "label": "S1(1 Core, 1.75 GB, 50 GB)",
+                            "value": "S1"
+                        },
+                        {
+                            "label": "S2(2 Core, 3.50 GB, 50 GB)",
+                            "value": "S2"
+                        },
+                        {
+                            "label": "S3(4 Core, 7.00 GB, 50 GB)",
+                            "value": "S3"
+                        },
+                        {
+                            "label": "P1V2(1 Core, 3.50 GB, 250 GB)",
+                            "value": "P1V2"
+                        },
+                        {
+                            "label": "P2V2(2 Core, 7.00 GB, 250 GB)",
+                            "value": "P2V2"
+                        },
+                        {
+                            "label": "P3V2(4 Core, 14.0 GB, 250 GB)",
+                            "value": "P3V2"
+                        }
+                    ],
+                    "required": true
+                },
+                "visible": true
+            },
+            {
+                "name": "storageAccount",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Storage Account Name",
+                "toolTip": "Name of the Storage Account.",
+                "defaultValue": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "^[a-z0-9]{3,60}$",
+                    "validationMessage": "The Storage Name must be between 3 and 60 lower case characters long and contain letters and numbers only."
+                }
+            },
+            {
+                "name": "storageAccountSku",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Storage Account Type",
+                "toolTip": "Replication type of Storage Account V2.",
+                "defaultValue": "Geo-redundant storage (GRS)",
+                "constraints": {
+                    "allowedValues": [
+                        {
+                            "label": "Locally redundant storage (LRS)",
+                            "value": "Standard_LRS"
+                        },
+                        {
+                            "label": "Geo-redundant storage (GRS)",
+                            "value": "Standard_GRS"
+                        },
+                        {
+                            "label": "Geo-zone-redundant storage (GZRS)",
+                            "value": "Standard_RAGRS"
+                        },
+                        {
+                            "label": "Zone-redundant storage (ZRS)",
+                            "value": "Standard_ZRS"
+                        }
+                    ],
+                    "required": true
+                },
+                "visible": true
+            },
+            {
+                "name": "keyVaultName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Key Vault Name",
+                "toolTip": "Name of the key vault.",
+                "defaultValue": "",
+                "constraints": {
+                    "required": true,
+                    "regex": "^[a-z0-9-]{3,24}$",
+                    "validationMessage": "The Key Vault Name must be between 3 and 24 lower case characters long and contain letters, numbers and hypens only."
+                }
+            },
+            {
+                "name": "keyVaultSku",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Key Vault Type",
+                "toolTip": "The pricing tier of Key Vault.",
+                "defaultValue": "Standard",
+                "constraints": {
+                    "allowedValues": [
+                        {
+                            "label": "Standard",
+                            "value": "Standard"
+                        },
+                        {
+                            "label": "Premium",
+                            "value": "Premium"
+                        }
+                    ],
+                    "required": true
+                },
+                "visible": true
+            }
+        ],
+        "steps": [],
+        "outputs": {
+            "location": "[location()]",
+            "webName": "[basics('webName')]",
+            "webSku": "[basics('webSku')]",
+            "storageAccountName": "[basics('storageAccount')]",
+            "storageAccountSku": "[basics('storageAccountSku')]",
+            "keyVaultName": "[basics('keyVaultName')]",
+            "keyVaultSku": "[basics('keyVaultSku')]"
+        }
+    }
+}

@@ -1,0 +1,193 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "webName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Web App."
+            }
+        },
+        "webSku": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Pricing tier of the Web App."
+            }
+        },
+        "packageUri": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Web App Package Uri."
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            }
+        },
+        "storageAccountSku": {
+            "type": "string",
+            "defaultValue": "Standard_GRS",
+            "metadata": {
+                "description": "Pricing tier of the Storage Account."
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            }
+        },
+        "keyVaultSku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "Pricing tier of the Key Vault"
+            }
+        }
+
+    },
+    "variables": {
+        "apiVersion": "2019-10-01",
+        "webAppInsightName": "[concat('appi-', parameters('webName'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "name": "demo",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "storage",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/storage.json')]"
+                },
+                "parameters": {
+                    "location": { "value": "[parameters('location')]" },
+                    "storageAccountName": { "value": "[parameters('storageAccountName')]" },
+                    "storageAccountSku": { "value": "[parameters('storageAccountSku')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "appinsight",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/appinsight.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": { "value": "[parameters('location')]" },
+                    "webAppInsightName": { "value": "[variables('webAppInsightName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "webapp",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'storage')]",
+                "[resourceId('Microsoft.Resources/deployments', 'appinsight')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/webapp.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": { "value": "[parameters('location')]" },
+                    "webName": { "value": "[parameters('webName')]" },
+                    "webSku": { "value": "[parameters('webSku')]" },
+                    "packageUri": { "value": "[parameters('packageUri')]" },
+                    "webAppInstrumentationKey": { "value": "[reference('appinsight').outputs.webAppInstrumentationKey.value]" },
+                    "webAppInsightConnectionString": { "value": "[reference('appinsight').outputs.webAppInsightConnectionString.value]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "keyvault",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'storage')]",
+                "[resourceId('Microsoft.Resources/deployments', 'search')]",
+                "[resourceId('Microsoft.Resources/deployments', 'webapp')]",
+                "[resourceId('Microsoft.Resources/deployments', 'appinsight')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/keyvault.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": { "value": "[parameters('location')]" },
+                    "keyVaultName": { "value": "[parameters('keyVaultName')]" },
+                    "keyVaultSku": { "value": "[parameters('keyVaultSku')]" },
+                    "objectId": { "value": "[reference('webapp').outputs.objectId.value]" },
+                    "secretValueObject": {
+                        "value": {
+                            "RemoteStorageConnection": "[reference('storage').outputs.connectionString.value]"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "storageAccountConnectionString": {
+            "type": "string",
+            "value": "[reference('storage').outputs.connectionString.value]"
+        },
+        "websiteHostname": {
+            "type": "string",
+            "value": "[concat(parameters('webName'), '.azurewebsites.net')]"
+        },
+        "webAppInstrumentationKey": {
+            "type": "string",
+            "value": "[reference('appinsight').outputs.webAppInstrumentationKey.value]"
+        },
+        "webAppInsightConnectionString": {
+            "type": "string",
+            "value": "[reference('appinsight').outputs.webAppInsightConnectionString.value]"
+        },
+        "keyVaultSecretUri": {
+            "type": "string",
+            "value": "[reference('keyvault').outputs.keyVaultSecretUri.value]"
+        }
+    }
+}
