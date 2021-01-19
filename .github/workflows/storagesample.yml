@@ -19,7 +19,7 @@ jobs:
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ secrets.AZURE_RG }}
-        template: ./azuredeploy.allinone.json
+        template: ./ARMTemplate/azuredeploy.allinone.json
         parameters: storageAccountName=studaidemo02
 
       # output containerName variable from template
