@@ -65,7 +65,7 @@
 
     },
     "variables": {
-        "apiVersion": "2019-10-01",
+        "apiVersion": "2020-06-01",
         "webAppInsightName": "[concat('appi-', parameters('webName'))]"
     },
     "resources": [
@@ -89,7 +89,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/storage.json')]"
+                    "relativePath": "artifacts/storage.json"
                 },
                 "parameters": {
                     "location": { "value": "[parameters('location')]" },
@@ -105,8 +105,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/appinsight.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "artifacts/appinsight.json"
                 },
                 "parameters": {
                     "location": { "value": "[parameters('location')]" },
@@ -125,8 +124,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/webapp.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "artifacts/webapp.json"
                 },
                 "parameters": {
                     "location": { "value": "[parameters('location')]" },
@@ -150,8 +148,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(deployment().properties.templateLink.uri, 'artifacts/keyvault.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "artifacts/keyvault.json"
                 },
                 "parameters": {
                     "location": { "value": "[parameters('location')]" },
