@@ -20,7 +20,7 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         resourceGroupName: ${{ secrets.AZURE_RG }}
         template: ./ARMTemplate/azuredeploy.allinone.json
-        parameters: storageAccountName=studaidemo02
+        parameters: storageAccountName=studaidemo03
 
       # output containerName variable from template
     - run: echo ${{ steps.deploy.outputs.containerName }}
