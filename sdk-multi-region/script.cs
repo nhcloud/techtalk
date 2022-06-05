@@ -2,11 +2,11 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Scripts;
 const string  DatabaseName = "cosmicworks";
-string endpoint = "https://learnlive.documents.azure.com:443/";
-string key = "ZErlv07Q6EY5MEqxHp13LAfejAlAUvK5oz8pPU0IsnNaQm6s5hi0TBcEuGEf3xR5FZ36cm8sBmzfSj328QKl3Q==";
+string endpoint = "";
+string key = "";
 
-string endpointMultiWrite = "https://learnlive-mm.documents.azure.com:443/";
-string keyMultiWrite = "1NBGAGGHFXBsuZbYv6vWsQbCpoNc3JZarBqObLot2uIWSOGqX6jFV2gziXpHQfL44lrk12UgixQpW35NLPpRzg==";
+string endpointMultiWrite = "";
+string keyMultiWrite = "";
 
 //LAB Demo
 
