@@ -1,12 +1,13 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Scripts;
-const string  DatabaseName = "cosmicworks";
-string endpoint = "";
-string key = "";
+using System.Threading.Tasks;
+const string DatabaseName = "cosmicworks";
+string endpoint = "https://learnlive.documents.azure.com:443/";
+string key = "ZErlv07Q6EY5MEqxHp13LAfejAlAUvK5oz8pPU0IsnNaQm6s5hi0TBcEuGEf3xR5FZ36cm8sBmzfSj328QKl3Q==";
 
-string endpointMultiWrite = "";
-string keyMultiWrite = "";
+string endpointMultiWrite = "https://learnlive-mm.documents.azure.com:443/";
+string keyMultiWrite = "1NBGAGGHFXBsuZbYv6vWsQbCpoNc3JZarBqObLot2uIWSOGqX6jFV2gziXpHQfL44lrk12UgixQpW35NLPpRzg==";
 
 //LAB Demo
 
@@ -25,15 +26,22 @@ Console.WriteLine($"Status Code:\t{response.StatusCode}");
 Console.WriteLine($"Charge (RU):\t{response.RequestCharge:0.00}");
 
 //Modified Demo
-
+Confirm("Please Enter Any key to run Single-Write Test.");
 await WriteAndRead(endpoint, key, new List<string> { Regions.EastUS });
-Console.WriteLine("Please Enter Any key to run Multi-Write Test.");
-Console.ReadLine();
+Confirm("Please Enter Any key to run Multi-Write Test.");
 await WriteAndRead(endpointMultiWrite, keyMultiWrite, new List<string> { Regions.EastUS });
 
-await SetCustomConflictResolutionPath(endpointMultiWrite, keyMultiWrite, "products2", "/categoryId", "/sortableTimestamp");
-await SetResolveConflictUsingFeed(endpointMultiWrite, keyMultiWrite, "products3", "/categoryId");
-await SetResolveConfiglictUsingStoredProc(endpointMultiWrite, keyMultiWrite, "products4", "/categoryId");
+Confirm("Please Enter Any key to run SetCustomConflictResolutionPath Test.");
+await SetCustomConflictResolutionPath(endpointMultiWrite, keyMultiWrite, "products2", "/categoryId", "/year");
+
+Confirm("Please Enter Any key to run SetResolveConfiglictUsingStoredProc Test.");
+await SetResolveConfiglictUsingStoredProc(endpointMultiWrite, keyMultiWrite, "products3", "/categoryId");
+
+Confirm("Please Enter Any key to run SetResolveConflictUsingFeed Test.");
+await SetResolveConflictUsingFeed(endpointMultiWrite, keyMultiWrite, "products4", "/categoryId");
+
+Confirm("Please Enter Any key to run GenerateConflict Test.");
+await GenerateConflict(endpointMultiWrite, keyMultiWrite, "products4");
 
 static async Task WriteAndRead(string endpoint, string key, List<string> regions)
 {
@@ -62,7 +70,7 @@ static async Task WriteAndRead(string endpoint, string key, List<string> regions
         stopwatch.Restart();
         var writeRresponse = await container.CreateItemAsync<Product>(product);
         stopwatch.Stop();
-        Console.WriteLine($"Status Code:\t{writeRresponse.StatusCode}; Charge (RU):\t{writeRresponse.RequestCharge:0.00}\t Elapsed:{stopwatch.Elapsed.TotalMilliseconds}");
+        Console.WriteLine($"Status Code:\t{writeRresponse.StatusCode}; Charge (RU):\t{writeRresponse.RequestCharge:0.00}\t Elapsed:{stopwatch.Elapsed.TotalMilliseconds}\t ClientElapsedTime:{writeRresponse.Diagnostics.GetClientElapsedTime().TotalMilliseconds}");
     }
 
     foreach (var product in products)
@@ -70,10 +78,34 @@ static async Task WriteAndRead(string endpoint, string key, List<string> regions
         stopwatch.Restart();
         var readResponse = await container.ReadItemAsync<Product>(product.id, new PartitionKey(product.categoryId));
         stopwatch.Stop();
-        Console.WriteLine($"Status Code:\t{readResponse.StatusCode}; Charge (RU):\t{readResponse.RequestCharge:0.00}\t Elapsed:{stopwatch.Elapsed.TotalMilliseconds}");
+        Console.WriteLine($"Status Code:\t{readResponse.StatusCode}; Charge (RU):\t{readResponse.RequestCharge:0.00}\t Elapsed:{stopwatch.Elapsed.TotalMilliseconds}\t ClientElapsedTime:{readResponse.Diagnostics.GetClientElapsedTime().TotalMilliseconds}");
     }
 }
+static async Task<bool> GenerateConflict(string endpoint, string key, string containerName)
+{
+    Console.WriteLine("Try generate conflict...");
+    string id = $"{Guid.NewGuid()}";
+    string categoryId = $"Conflicting Item";
+    Product item = new(id, "Manual Confilict Generated", categoryId);
 
+    CosmosClientBuilder builderEast = new(endpoint, key);
+    builderEast.WithApplicationRegion(Regions.EastUS);
+    using CosmosClient clientEast = builderEast.Build();
+    Container containerEast = clientEast.GetContainer(DatabaseName, containerName);
+
+    CosmosClientBuilder builderEastAsia = new(endpoint, key);
+    builderEastAsia.WithApplicationRegion(Regions.EastAsia);
+    using CosmosClient clientEastAsia = builderEast.Build();
+    Container containerEastAsia = clientEast.GetContainer(DatabaseName, containerName);
+
+    List<Task> tasks = new List<Task>();
+    // tasks.Add(Task.Run(async () => await containerEast.CreateItemAsync<Product>(item)));
+    // tasks.Add(Task.Run(async () => await containerEastAsia.CreateItemAsync<Product>(item)));
+    tasks.Add(containerEast.CreateItemAsync<Product>(item));
+    tasks.Add(containerEastAsia.CreateItemAsync<Product>(item));
+    var result = Task.WhenAll(tasks);
+    return true;
+}
 static async Task<bool> SetCustomConflictResolutionPath(string endpoint, string key, string containerName, string partitionKey, string conflictResolutionPath)
 {
     CosmosClientBuilder builder = new(endpoint, key);
@@ -123,8 +155,8 @@ static async Task<bool> SetResolveConfiglictUsingStoredProc(string endpoint, str
         }
     };
     Container container = await database.CreateContainerIfNotExistsAsync(properties);
-    StoredProcedureProperties spProperties = new (sprocName, File.ReadAllText(@"code.js"));
-    await container.Scripts.CreateStoredProcedureAsync(spProperties); 
+    StoredProcedureProperties spProperties = new(sprocName, File.ReadAllText(@"code.js"));
+    await container.Scripts.CreateStoredProcedureAsync(spProperties);
     return true;
 }
 
@@ -139,4 +171,11 @@ static List<Product> GenerateProduct(uint numberOfItems)
           .Select(s => s[random.Next(s.Length)]).ToArray()), "Multi-Write-Demo"/*$"{Guid.NewGuid()}"*/));
     }
     return products;
+}
+static void Confirm(string? message)
+{
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine(message);
+    Console.ResetColor();
+    Console.ReadLine();
 }
