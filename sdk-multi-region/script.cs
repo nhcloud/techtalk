@@ -3,16 +3,16 @@ using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Scripts;
 using System.Threading.Tasks;
 const string DatabaseName = "cosmicworks";
-string endpoint = "";
-string key = "";
+string endpoint = "<YOUR ENDPOINT>";
+string key = "<YOUR KEY>";
 
-string endpointMultiWrite = "";
-string keyMultiWrite = "";
+string endpointMultiWrite = "<YOUR ENDPOINT>";
+string keyMultiWrite = "<YOUR KEY>";
 
 //LAB Demo
-
+Confirm("Please Enter Any key to run LAB Content.");
 CosmosClientBuilder builder = new(endpoint, key);
-
+//builder.WithApplicationRegion(Regions.AustraliaCentral);
 using CosmosClient client = builder.Build();
 Container container = client.GetContainer(DatabaseName, "products");
 
@@ -26,21 +26,21 @@ Console.WriteLine($"Status Code:\t{response.StatusCode}");
 Console.WriteLine($"Charge (RU):\t{response.RequestCharge:0.00}");
 
 //Modified Demo
-Confirm("Please Enter Any key to run Single-Write Test.");
+Confirm("Please Enter Any key to run Single-Write.");
 await WriteAndRead(endpoint, key, new List<string> { Regions.EastUS });
-Confirm("Please Enter Any key to run Multi-Write Test.");
+Confirm("Please Enter Any key to run Multi-Write.");
 await WriteAndRead(endpointMultiWrite, keyMultiWrite, new List<string> { Regions.EastUS });
 
-Confirm("Please Enter Any key to run SetCustomConflictResolutionPath Test.");
+Confirm("Please Enter Any key to run Set-CustomConflictResolutionPath.");
 await SetCustomConflictResolutionPath(endpointMultiWrite, keyMultiWrite, "products2", "/categoryId", "/year");
 
-Confirm("Please Enter Any key to run SetResolveConfiglictUsingStoredProc Test.");
+Confirm("Please Enter Any key to run Set-ResolveConfiglictUsingStoredProc.");
 await SetResolveConfiglictUsingStoredProc(endpointMultiWrite, keyMultiWrite, "products3", "/categoryId");
 
-Confirm("Please Enter Any key to run SetResolveConflictUsingFeed Test.");
+Confirm("Please Enter Any key to run Set-ResolveConflictUsingFeed.");
 await SetResolveConflictUsingFeed(endpointMultiWrite, keyMultiWrite, "products4", "/categoryId");
 
-Confirm("Please Enter Any key to run GenerateConflict Test.");
+Confirm("Please Enter Any key to run GenerateConflict.");
 await GenerateConflict(endpointMultiWrite, keyMultiWrite, "products4");
 
 static async Task WriteAndRead(string endpoint, string key, List<string> regions)
@@ -81,31 +81,7 @@ static async Task WriteAndRead(string endpoint, string key, List<string> regions
         Console.WriteLine($"Status Code:\t{readResponse.StatusCode}; Charge (RU):\t{readResponse.RequestCharge:0.00}\t Elapsed:{stopwatch.Elapsed.TotalMilliseconds}\t ClientElapsedTime:{readResponse.Diagnostics.GetClientElapsedTime().TotalMilliseconds}");
     }
 }
-static async Task<bool> GenerateConflict(string endpoint, string key, string containerName)
-{
-    Console.WriteLine("Try generate conflict...");
-    string id = $"{Guid.NewGuid()}";
-    string categoryId = $"Conflicting Item";
-    Product item = new(id, "Manual Confilict Generated", categoryId);
 
-    CosmosClientBuilder builderEast = new(endpoint, key);
-    builderEast.WithApplicationRegion(Regions.EastUS);
-    using CosmosClient clientEast = builderEast.Build();
-    Container containerEast = clientEast.GetContainer(DatabaseName, containerName);
-
-    CosmosClientBuilder builderEastAsia = new(endpoint, key);
-    builderEastAsia.WithApplicationRegion(Regions.EastAsia);
-    using CosmosClient clientEastAsia = builderEast.Build();
-    Container containerEastAsia = clientEast.GetContainer(DatabaseName, containerName);
-
-    List<Task> tasks = new List<Task>();
-    // tasks.Add(Task.Run(async () => await containerEast.CreateItemAsync<Product>(item)));
-    // tasks.Add(Task.Run(async () => await containerEastAsia.CreateItemAsync<Product>(item)));
-    tasks.Add(containerEast.CreateItemAsync<Product>(item));
-    tasks.Add(containerEastAsia.CreateItemAsync<Product>(item));
-    var result = Task.WhenAll(tasks);
-    return true;
-}
 static async Task<bool> SetCustomConflictResolutionPath(string endpoint, string key, string containerName, string partitionKey, string conflictResolutionPath)
 {
     CosmosClientBuilder builder = new(endpoint, key);
@@ -122,7 +98,33 @@ static async Task<bool> SetCustomConflictResolutionPath(string endpoint, string 
     Container container = await database.CreateContainerIfNotExistsAsync(properties);
     return true;
 }
+static async Task<bool> SetResolveConfiglictUsingStoredProc(string endpoint, string key, string containerName, string partitionKey)
+{
+    try
+    {
+        const string sprocName = "resolveConflicts";
+        CosmosClientBuilder builder = new(endpoint, key);
+        using CosmosClient client = builder.Build();
+        Database database = client.GetDatabase(DatabaseName);
 
+        ContainerProperties properties = new(containerName, partitionKey)
+        {
+            ConflictResolutionPolicy = new ConflictResolutionPolicy()
+            {
+                Mode = ConflictResolutionMode.Custom,
+                ResolutionProcedure = $"dbs/{DatabaseName}/colls/{containerName}/sprocs/{sprocName}"
+            }
+        };
+        Container container = await database.CreateContainerIfNotExistsAsync(properties);
+        StoredProcedureProperties spProperties = new(sprocName, File.ReadAllText(@"code.js"));
+        await container.Scripts.CreateStoredProcedureAsync(spProperties);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
+    return true;
+}
 static async Task<bool> SetResolveConflictUsingFeed(string endpoint, string key, string containerName, string partitionKey)
 {
     CosmosClientBuilder builder = new(endpoint, key);
@@ -138,28 +140,66 @@ static async Task<bool> SetResolveConflictUsingFeed(string endpoint, string key,
     Container container = await database.CreateContainerIfNotExistsAsync(properties);
     return true;
 }
-
-static async Task<bool> SetResolveConfiglictUsingStoredProc(string endpoint, string key, string containerName, string partitionKey)
+static async Task<bool> GenerateConflict(string endpoint, string key, string containerName)
 {
-    const string sprocName = "resolveConflicts";
-    CosmosClientBuilder builder = new(endpoint, key);
-    using CosmosClient client = builder.Build();
-    Database database = client.GetDatabase(DatabaseName);
+    Console.WriteLine("Try generate conflict...");
+    string id = $"{Guid.NewGuid()}";
+    string categoryId = $"Conflicting Item";
+    Product item = new(id, "Manual Confilict Generated", categoryId);
 
-    ContainerProperties properties = new(containerName, partitionKey)
+    CosmosClientBuilder builderEast = new(endpoint, key);
+    builderEast.WithApplicationRegion(Regions.EastUS);
+    using CosmosClient clientEast = builderEast.Build();
+    Container containerEast = clientEast.GetContainer(DatabaseName, containerName);
+
+    CosmosClientBuilder builderEastAsia = new(endpoint, key);
+    builderEastAsia.WithApplicationRegion(Regions.EastAsia);
+    using CosmosClient clientEastAsia = builderEastAsia.Build();
+    Container containerEastAsia = clientEastAsia.GetContainer(DatabaseName, containerName);
+    var actions = new List<Action>();
+    var errors = new List<string>();
+    actions.Add(async () =>
     {
-        ConflictResolutionPolicy = new ConflictResolutionPolicy()
+        try
         {
-            Mode = ConflictResolutionMode.Custom,
-            ResolutionProcedure = $"dbs/{DatabaseName}/colls/{containerName}/sprocs/{sprocName}"
+            await containerEast.CreateItemAsync<Product>(item);
         }
+        catch (Exception e)
+        {
+            errors.Add(e.Message);
+        }
+    });
+    actions.Add(async () =>
+    {
+        try
+        {
+            await containerEastAsia.CreateItemAsync<Product>(item);
+        }
+        catch (Exception e)
+        {
+            errors.Add(e.Message);
+        }
+    });
+    ParallelOptions options = new()
+    {
+        MaxDegreeOfParallelism = Environment.ProcessorCount
     };
-    Container container = await database.CreateContainerIfNotExistsAsync(properties);
-    StoredProcedureProperties spProperties = new(sprocName, File.ReadAllText(@"code.js"));
-    await container.Scripts.CreateStoredProcedureAsync(spProperties);
+
+    Parallel.ForEach(actions, options, action =>
+                    {
+                        action();
+                    });
+
+    List<Task> tasks = new List<Task>();
+    tasks.Add(Task.Run(async () => await containerEast.CreateItemAsync<Product>(item)));
+    tasks.Add(Task.Run(async () => await containerEastAsia.CreateItemAsync<Product>(item)));
+    var result = Task.WhenAll(tasks);
+    foreach (var error in errors)
+    {
+        Console.WriteLine(error);
+    }
     return true;
 }
-
 static List<Product> GenerateProduct(uint numberOfItems)
 {
     var products = new List<Product>();
