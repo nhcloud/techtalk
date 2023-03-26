@@ -13,7 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net6WebApi", "Net6WebApi\Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net6WebApiMin", "Net6WebApiMin\Net6WebApiMin.csproj", "{0CFC5A77-CA9B-41A4-A520-C43DDCF18365}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net6Lib", "Net6Lib\Net6Lib.csproj", "{02AF199F-E105-46E0-8566-2D5CBC2CEDAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net6Lib", "Net6Lib\Net6Lib.csproj", "{02AF199F-E105-46E0-8566-2D5CBC2CEDAD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net7Console", "Net7Console\Net7Console.csproj", "{9C5A60F3-4D2B-42B4-A72E-3110340DE3C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Net7WebApiMin", "Net7WebApiMin\Net7WebApiMin.csproj", "{5A677AFF-5800-4140-99CC-75B30D0C97CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{02AF199F-E105-46E0-8566-2D5CBC2CEDAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02AF199F-E105-46E0-8566-2D5CBC2CEDAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02AF199F-E105-46E0-8566-2D5CBC2CEDAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C5A60F3-4D2B-42B4-A72E-3110340DE3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C5A60F3-4D2B-42B4-A72E-3110340DE3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C5A60F3-4D2B-42B4-A72E-3110340DE3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C5A60F3-4D2B-42B4-A72E-3110340DE3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A677AFF-5800-4140-99CC-75B30D0C97CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A677AFF-5800-4140-99CC-75B30D0C97CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A677AFF-5800-4140-99CC-75B30D0C97CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A677AFF-5800-4140-99CC-75B30D0C97CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

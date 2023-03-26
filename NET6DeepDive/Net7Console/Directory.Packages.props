@@ -1,0 +1,6 @@
+<Project>
+ <Import Project="$([MSBuild]::GetPathOfFileAbove(Directory.Packages.props, $(MSBuildThisFileDirectory)..))" />
+  <ItemGroup>
+    <PackageVersion  Include="BenchmarkDotNet.Annotations" Version="0.13.4" />
+  </ItemGroup>
+</Project>
