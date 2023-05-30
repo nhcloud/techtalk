@@ -27,6 +27,10 @@ public class Startup
         var configuration = Configuration.GetSection("AppSettings");
         AppSettings.OpenAiKey = configuration["OpenAiKey"];
         AppSettings.OpenAiOrg = configuration["OpenAiOrg"];
+        AppSettings.AoAiEndpoint = configuration["AoAiEndpoint"];
+        AppSettings.AoAiKey = configuration["AoAiKey"];
+        AppSettings.AoAiDeploymentName = configuration["AoAiDeploymentName"];
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
